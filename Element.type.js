@@ -1,8 +1,10 @@
 module.exports = {
 	attribute: function (element, node) {
+		var Element = element.constructor;
+
 		element.attributes[node.attribute] = true;
 
-		if (node.value) element.attributes[node.attribute] = node.value.replace(/^(['"])(.+)\1$/g, '$2');
+		if (node.value) element.attributes[node.attribute] = Element.trimQuotes(node.value);
 	},
 	class: function (element, node) {
 		if ('class' in element.attributes) element.attributes.class += ' ' + node.value;

@@ -95,6 +95,10 @@ Element.prototype.append = function append(node) {
 	}
 };
 
+Element.trimQuotes = function trimQuotes(string) {
+	return string.replace(/^(['"])(.*)\1$/, '$2');
+};
+
 Element.atRule = require('./Element.atRule.js');
 Element.decl = require('./Element.decl.js');
 Element.pseudo = require('./Element.pseudo.js');
