@@ -19,10 +19,8 @@ Source SCSS:
 get_header();
 }
 
-@if (true) {
-	h1 {
-		content: "Welcome to CSS";
-	}
+h1 {
+	content: "Welcome to CSS";
 }
 
 nav.sidebar.--main {
@@ -34,7 +32,13 @@ nav.sidebar.--main {
 		}
 	}
 }
+
+@if ( $page->has_footer ) {
+	@import "footer";
+}
 ```
+
+
 
 Output PHP:
 ```php
@@ -49,11 +53,9 @@ Output PHP:
 get_header();
 ?>
 
-<?php if (true) { ?>
-	<h1>
-		Welcome to CSS
-	</h1>
-<?php } ?>
+<h1>
+	Welcome to CSS
+</h1>
 
 <nav class="sidebar --main">
 	<ul role="menu">
@@ -64,6 +66,10 @@ get_header();
 		<?php } ?>
 	</ul>
 </nav>
+
+<?php if ( $page->has_footer ) { ?>
+	# Processed PHP from footer.scss
+<?php } ?>
 ```
 
 ## Usage
@@ -79,8 +85,10 @@ npm install postcss-wp --save-dev
 
 ### Node
 
+Be certain to enable [Safe Mode].
+
 ```js
-postcss([ require('postcss-wp')({ /* options */ }) ])
+postcss([ require('postcss-wp')({ /* options */ }) ]).process(css, { safe: true });
 ```
 
 ### Grunt
@@ -91,7 +99,7 @@ Install [Grunt PostCSS]:
 npm install postcss-wp --save-dev
 ```
 
-Enable [PostCSS WP] within your Gruntfile:
+Enable [PostCSS WP] within your Gruntfile, being certain to enable [Safe Mode]:
 
 ```js
 grunt.loadNpmTasks('grunt-postcss');
@@ -126,3 +134,4 @@ grunt.initConfig({
 [Grunt PostCSS]: https://github.com/nDmitry/grunt-postcss
 [PostCSS]: https://github.com/postcss/postcss
 [PostCSS WP]: https://github.com/jonathantneal/postcss-wp
+[Safe Mode]: https://github.com/postcss/postcss#safe-mode
