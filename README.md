@@ -14,12 +14,28 @@
 }
 
 h1 {
-    content: "Generated from CSS"
+	content: 'Generated from CSS'
 }
 
 p {
-    content: "Like it was meant to be."
+	content: 'Like it was meant to be.'
 }
+```
+
+```php
+<?php
+/**
+ * Greetings from CSS
+ */
+?>
+
+<h1>
+	<?php echo esc_html('Generated from CSS'); ?>
+</h1>
+
+<p>
+	<?php echo esc_html('Like it was meant to be.'); ?>
+</p>
 ```
 
 ## Usage
@@ -53,16 +69,16 @@ Enable [PostCSS WP] within your Gruntfile:
 grunt.loadNpmTasks('grunt-postcss');
 
 grunt.initConfig({
-    postcss: {
-        options: {
-            processors: [
-                require('postcss-wp')({ /* options */ })
-            ]
-        },
-        dist: {
-            src: 'css/*.css'
-        }
-    }
+	postcss: {
+		options: {
+			processors: [
+				require('postcss-wp')({ /* options */ })
+			]
+		},
+		dist: {
+			src: 'css/*.css'
+		}
+	}
 });
 ```
 
@@ -72,7 +88,7 @@ grunt.initConfig({
 
 ```js
 {
-    dest: 'foo.php' // output to foo.php 
+	dest: 'foo.php' // output to foo.php 
 }
 ```
 
