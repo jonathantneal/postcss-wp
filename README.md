@@ -85,7 +85,7 @@ npm install postcss-wp --save-dev
 
 ### Node
 
-Be certain to enable [Safe Mode].
+Require [PostCSS WP] directly in your script, being certain to enable [Safe Mode].
 
 ```js
 postcss([ require('postcss-wp')({ /* options */ }) ]).process(css, { safe: true });
@@ -99,7 +99,7 @@ Install [Grunt PostCSS]:
 npm install postcss-wp --save-dev
 ```
 
-Enable [PostCSS WP] within your Gruntfile, being certain to enable [Safe Mode]:
+Require [PostCSS WP] directly in your Gruntfile, being certain to enable [Safe Mode]:
 
 ```js
 grunt.loadNpmTasks('grunt-postcss');
