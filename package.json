@@ -1,0 +1,26 @@
+{
+	"name": "postcss-wp",
+	"version": "0.0.0",
+	"description": "A PostCSS plugin that allows you to generate WordPress PHP files from CSS files",
+	"keywords": ["postcss", "css", "postcss-plugin", "generate", "compile", "php", "wordpress"],
+	"author": "Jonathan Neal <jonathantneal@hotmail.com>",
+	"license": "CC0-1.0",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/jonathantneal/postcss-wp.git"
+	},
+	"dependencies": {
+		"postcss": "^4.1.12",
+		"postcss-selector-parser": "^1.1.1"
+	},
+	"devDependencies": {
+		"gulp-eslint": "^0.14.0",
+		"gulp-mocha": "^2.1.2",
+		"gulp-watch": "^4.2.4",
+		"chai": "^3.0.0",
+		"gulp": "^3.9.0"
+	},
+	"scripts": {
+		"test": "gulp"
+	}
+}
