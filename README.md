@@ -6,7 +6,7 @@
 
 **This plugin is in a very experimental state.**
 
-Source SCSS:
+Source CSS:
 ```sass
 @php {
 /**
@@ -113,7 +113,7 @@ grunt.initConfig({
 			safe: true
 		},
 		dist: {
-			src: 'css/*.css'
+			src: 'css-templates/*.css'
 		}
 	}
 });
