@@ -1,5 +1,7 @@
 var PHP_START = '<?php';
 var PHP_END = '?>';
+var fs = require('fs');
+var postcss = require('postcss');
 
 function forEach(element, node) {
 	// conditionally prepend space
@@ -33,6 +35,26 @@ module.exports = {
 	'else': forEach,
 	'elseif': forEach,
 	'while': forEach,
+	'import': function (element, node) {
+		var Element = element.constructor;
+
+		// cache file name
+		var filename = Element.trimQuotes(node.params) + '.scss';
+
+		// import scss file
+		var css = fs.readFileSync(filename, 'utf8');
+
+		// conditionally prepend space
+		if (node.before) element.children.push(node.before);
+
+		// append every node in the imported css
+		postcss.parse(css, { safe: true }).each(function (childNode) {
+			element.append(childNode);
+		});
+
+		// conditionally append space
+		if (node.after) element.children.push(node.after);
+	},
 	php: function (element, node) {
 		// open PHP
 		element.children.push(PHP_START);
