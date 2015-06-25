@@ -6,6 +6,7 @@
 
 **This plugin is in a very experimental state.**
 
+Source SCSS:
 ```sass
 @php {
 /**
@@ -35,6 +36,7 @@ nav.sidebar.--main {
 }
 ```
 
+Output PHP:
 ```php
 <?php
 /**
