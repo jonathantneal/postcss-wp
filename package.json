@@ -1,6 +1,6 @@
 {
 	"name": "postcss-wp",
-	"version": "0.2.0",
+	"version": "0.3.0",
 	"description": "A PostCSS plugin that allows you to generate WordPress PHP files from CSS files",
 	"keywords": ["postcss", "css", "postcss-plugin", "generate", "compile", "php", "wordpress"],
 	"author": "Jonathan Neal <jonathantneal@hotmail.com>",
