@@ -1,31 +1,31 @@
-var PHP_START = '<?php ';
-var PHP_END = '?>';
-var PHP_END_SAFE = ' ?>';
-var PHP_ECHO = 'echo ';
-var SELF_CLOSING_ELEMENTS = /area|base|br|col|command|embed|hr|img|input|keygen|link|meta|param|source|track|wbr/i;
-var CONTENT_ELEMENTS = /img|input/i;
-var CONTENT_ELEMENTS_MAP = {
-	input: 'value',
-	img: 'src'
-};
+var parser = require('postcss-selector-parser');
 
-function Element(name) {
+// Constants
+var HTML_SELF_CLOSING = /area|base|br|col|command|embed|hr|img|input|keygen|link|meta|param|source|track|wbr/;
+
+// Element
+function Element(selector) {
 	var element = this;
 
-	element.nodeName = arguments.length ? String(name).toLowerCase() : 'div';
+	element.nodeName = null;
 	element.attributes = {};
 	element.children = [];
+
+	if (selector) element.attrsBySelector(selector);
 }
 
+// <Element>.toString
 Element.prototype.toString = function toString() {
 	var element = this;
 	var innerHTML = '';
 
-	if (element.nodeName) {
+	if (element.nodeName !== null) {
 		innerHTML += '<' + element.nodeName;
 
 		Object.keys(element.attributes).forEach(function (key) {
-			innerHTML += ' ' + key + '="' + element.attributes[key] + '"';
+			innerHTML += ' ' + key;
+
+			if (element.attributes[key] !== null) innerHTML += '="' + element.attributes[key] + '"';
 		});
 
 		innerHTML += '>';
@@ -35,78 +35,71 @@ Element.prototype.toString = function toString() {
 		innerHTML += childElement;
 	});
 
-	if (element.nodeName && !SELF_CLOSING_ELEMENTS.test(element.nodeName)) {
-		innerHTML += '</' + element.nodeName + '>';
-	}
+	if (element.nodeName !== null && !HTML_SELF_CLOSING.test(element.nodeName)) innerHTML += '</' + element.nodeName + '>';
 
 	return innerHTML;
-};
+}
 
-Element.prototype.appendNode = function appendNode(node) {
+// <Element>.attrsBySelector
+Element.prototype.attrsBySelector = function attrsBySelector(selector) {
 	var element = this;
 
-	if (node.type === 'rule') {
-		var childElement = Element.fromSelector(node.selector);
+	// parse selector
+	Element.parser.process(selector).res.nodes[0].each(function (node, index) {
+		if (node.type in Element.type) Element.type[node.type](element, node);
+	});
+};
 
+// <Element>.append
+Element.prototype.append = function append(node) {
+	var element = this;
+
+	// at rule
+	if (node.type === 'atrule' && node.name in Element.atRule) {
+		Element.atRule[node.name](element, node);
+	}
+
+	// rule
+	if (node.type === 'rule') {
+		// create child element
+		var childElement = new Element(node.selector);
+
+		// set child parent
 		childElement.parent = element;
 
-		element.children.push(node.before);
-		element.children.push(childElement);
-
+		// append grandchildren
 		node.each(function (subnode) {
-			childElement.appendNode(subnode);
+			childElement.append(subnode);
 		});
 
-		if (!SELF_CLOSING_ELEMENTS.test(childElement.nodeName)) {
-			childElement.children.push(node.after);
-		}
-	}
-	else if (node.type === 'atrule' && node.name === 'php') {
-		element.children.push(PHP_START);
-
+		// conditionally prepend space
 		if (node.before) element.children.push(node.before);
 
-		node.each(function (subnode) {
-			element.children.push(String(subnode));
-		});
+		// append child element
+		element.children.push(childElement);
 
-		if (node.after) element.children.push(node.after);
+		// conditionally append space
+		if (node.after && !HTML_SELF_CLOSING.test(childElement.nodeName)) childElement.children.push(node.after);
+	}
 
-		element.children.push(PHP_END);
-	} else if (node.type === 'decl') {
-		if (node.prop === 'content') {
-			if (CONTENT_ELEMENTS.test(element.nodeName)) {
-				element.attributes[CONTENT_ELEMENTS_MAP[element.nodeName]] = PHP_START + PHP_ECHO + 'esc_attr(' + node.value.slice(1, -1) + ');' + PHP_END_SAFE;
-			} else {
-				if (node.before) element.children.push(node.before);
+	// declaration
+	if (node.type === 'decl') {
+		// conditionally prepend space
+		if (node.before && !HTML_SELF_CLOSING.test(element.nodeName)) element.children.push(node.before);
 
-				element.children.push(PHP_START + PHP_ECHO + 'esc_html(' + node.value.slice(1, -1) + ');' + PHP_END_SAFE);
+		// conditionally add declarations
+		if (node.prop in Element.decl) Element.decl[node.prop](element, node);
 
-				if (node.after) element.children.push(node.after);
-			}
-		} else {
-			if (node.before) element.children.push(node.before);
-
-			element.children.push(PHP_START + PHP_ECHO + node.prop + '(' + node.value.slice(1, -1) + ');' + PHP_END_SAFE);
-
-			if (node.after) element.children.push(node.after);
-		}
+		// conditionally append space
+		if (node.after && !HTML_SELF_CLOSING.test(element.nodeName)) element.children.push(node.after);
 	}
 };
 
-Element.fromSelector = function fromSelector(selector) {
-	var element = new Element('div');
-	var parser = require('postcss-selector-parser');
-	var parsedSelector = parser().process(selector).res.nodes[0];
+Element.atRule = require('./Element.atRule.js');
+Element.decl = require('./Element.decl.js');
+Element.pseudo = require('./Element.pseudo.js');
+Element.type = require('./Element.type.js');
+Element.parser = parser();
 
-	parsedSelector.each(function (node, index) {
-		if (node.type === 'tag') element.nodeName = node.value;
-		if (node.type === 'id') element.attributes.id = 'id' in element.attributes ? element.attributes.id + ' ' + node.value : node.value;
-		if (node.type === 'class') element.attributes.class = 'class' in element.attributes ? element.attributes.class + ' ' + node.value : node.value;
-		if (node.type === 'attribute') element.attributes[node.attribute] = node.value && node.value.slice(1, -1);
-	});
-
-	return element;
-};
-
+// export Element
 module.exports = Element;
