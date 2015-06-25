@@ -9,33 +9,59 @@
 ```sass
 @php {
 /**
- * Greetings from CSS
+ * Template Name: Search Results (hard-coded)
+ *
+ * @package JDRF 2015
+ * @since 0.1.0
  */
+
+get_header();
 }
 
-h1 {
-	content: 'Generated from CSS'
+@if (true) {
+	h1 {
+		content: "Welcome to CSS";
+	}
 }
 
-p {
-	content: 'Like it was meant to be.'
+nav.sidebar.--main {
+	ul[role="menu"] {
+		@foreach ( $sidebar_items as $item ) {
+			li:class( $item->active, active ) {
+				esc_html: $item->title;
+			}
+		}
+	}
 }
 ```
 
 ```php
 <?php
 /**
- * Greetings from CSS
+ * Template Name: Search Results (hard-coded)
+ *
+ * @package JDRF 2015
+ * @since 0.1.0
  */
+
+get_header();
 ?>
 
-<h1>
-	<?php echo esc_html('Generated from CSS'); ?>
-</h1>
+<?php if (true) { ?>
+	<h1>
+		Welcome to CSS
+	</h1>
+<?php } ?>
 
-<p>
-	<?php echo esc_html('Like it was meant to be.'); ?>
-</p>
+<nav class="sidebar --main">
+	<ul role="menu">
+		<?php foreach ( $sidebar_items as $item ) { ?>
+			<li class="<?php if ($item->active) { echo esc_attr('active'); } ?>">
+				<?php echo esc_html($item->title); ?>
+			</li>
+		<?php } ?>
+	</ul>
+</nav>
 ```
 
 ## Usage
@@ -73,7 +99,8 @@ grunt.initConfig({
 		options: {
 			processors: [
 				require('postcss-wp')({ /* options */ })
-			]
+			],
+			safe: true
 		},
 		dist: {
 			src: 'css/*.css'
